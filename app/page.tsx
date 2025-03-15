@@ -12,7 +12,7 @@ const getDefaultVideos: () => Video[] = () => {
 export default async function Home({
   searchParams,
 }: {
-  searchParams: { keyword?: string };
+  searchParams: Promise<{ keyword?: string }>;
 }) {
   let displayVideos = getDefaultVideos();
   const { keyword } = await searchParams;
