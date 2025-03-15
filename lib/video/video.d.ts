@@ -5,4 +5,5 @@ type Video = {
   imageUrl: string;
   airedAt: string;
   tags: string[];
+  subtitles?: Subtitle[];
 };

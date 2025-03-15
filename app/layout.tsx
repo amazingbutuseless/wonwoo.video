@@ -27,11 +27,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <header className="flex justify-between items-center m-auto w-sm">
+        <header className="flex justify-between items-center m-auto mt-8 w-sm">
           <h1>WONWOO VIDEO</h1>
         </header>
 
-        <main className="m-auto w-sm">{children}</main>
+        <main className="m-auto mb-8 w-sm">{children}</main>
       </body>
     </html>
   );

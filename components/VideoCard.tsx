@@ -4,6 +4,46 @@
 import Link from "next/link";
 import dayjs from "dayjs";
 import { useEffect, useRef, useState } from "react";
+import { Subtitle as SubtitleType } from "@/lib/video/subtitle";
+
+const MAX_SUBTITLES = 5;
+
+const Subtitle: React.FC<{ subtitles: SubtitleType[] }> = ({ subtitles }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const hasMoreSubtitles = (subtitles || []).length > MAX_SUBTITLES;
+
+  return (
+    <div className="p-4">
+      <hr className="border-0 mb-4 w-[40px] h-[1px] bg-gray-200" />
+
+      {(isExpanded ? subtitles : subtitles.slice(0, MAX_SUBTITLES)).map(
+        (subtitle) => (
+          <blockquote key={subtitle.startTime} className="mb-2">
+            <p className="text-gray-900 text-sm">{subtitle.text}</p>
+            <cite className="not-italic text-xs text-gray-500">
+              {subtitle.startTime}
+            </cite>
+          </blockquote>
+        )
+      )}
+
+      {hasMoreSubtitles && (
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            setIsExpanded(!isExpanded);
+          }}
+          className="text-sm text-gray-600 mt-2 hover:underline focus:outline-none"
+        >
+          {isExpanded
+            ? `접기`
+            : `더보기 (${subtitles.length - MAX_SUBTITLES}개)`}
+        </button>
+      )}
+    </div>
+  );
+};
 
 export const VideoCard: React.FC<Video> = (video) => {
   const cardRef = useRef<HTMLElement>(null);
@@ -13,12 +53,7 @@ export const VideoCard: React.FC<Video> = (video) => {
   const [spriteLoaded, setSpriteLoaded] = useState(false);
   const [currentFrame, setCurrentFrame] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
-
-  const isTouchDevice =
-    "ontouchstart" in window ||
-    navigator.maxTouchPoints > 0 ||
-    // @ts-expect-error - 일부 브라우저에서는 msMaxTouchPoints가 있음
-    navigator.msMaxTouchPoints > 0;
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
 
   const spriteConfig = {
     columns: 10,
@@ -43,6 +78,15 @@ export const VideoCard: React.FC<Video> = (video) => {
     width: "160px",
     height: `${spriteConfig.frameHeight}px`,
   };
+
+  useEffect(() => {
+    setIsTouchDevice(
+      "ontouchstart" in window ||
+        navigator.maxTouchPoints > 0 ||
+        // @ts-expect-error - 일부 브라우저에서는 msMaxTouchPoints가 있음
+        navigator.msMaxTouchPoints > 0
+    );
+  }, []);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -130,7 +174,7 @@ export const VideoCard: React.FC<Video> = (video) => {
         </div>
       </Link>
 
-      {video.tags.length > 0 && (
+      {/* {video.tags.length > 0 && (
         <div className="flex flex-wrap p-4 pt-0">
           {video.tags.map((tag) => (
             <span key={tag} className="text-sm underline">
@@ -138,7 +182,9 @@ export const VideoCard: React.FC<Video> = (video) => {
             </span>
           ))}
         </div>
-      )}
+      )} */}
+
+      {video.subtitles && <Subtitle subtitles={video.subtitles} />}
     </article>
   );
 };
