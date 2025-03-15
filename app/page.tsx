@@ -39,7 +39,7 @@ export default async function Home({
     <>
       <SubtitleSearch />
 
-      <main className="flex flex-col gap-8 mt-4">
+      <main className="flex flex-col gap-8 m-4">
         {displayVideos.length > 0 ? (
           displayVideos.map((video) => (
             <div key={video.id} className="flex gap-4 items-start">

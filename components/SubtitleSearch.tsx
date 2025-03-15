@@ -25,7 +25,7 @@ export const SubtitleSearch = () => {
   );
 
   return (
-    <form className="relative" onSubmit={handleSearch}>
+    <form className="relative m-4" onSubmit={handleSearch}>
       <input
         type="text"
         name="keyword"

@@ -20,7 +20,9 @@ const Subtitle: React.FC<{ subtitles: SubtitleType[] }> = ({ subtitles }) => {
       {(isExpanded ? subtitles : subtitles.slice(0, MAX_SUBTITLES)).map(
         (subtitle) => (
           <blockquote key={subtitle.startTime} className="mb-2">
-            <p className="text-gray-900 text-sm">{subtitle.text}</p>
+            <p className="text-gray-900 dark:text-gray-200 text-sm">
+              {subtitle.text}
+            </p>
             <cite className="not-italic text-xs text-gray-500">
               {subtitle.startTime}
             </cite>
@@ -146,7 +148,7 @@ export const VideoCard: React.FC<Video> = (video) => {
   return (
     <article
       key={video.id}
-      className="relative border border-gray-200 bg-white rounded-lg shadow-sm overflow-hidden"
+      className="relative border border-gray-200 bg-white dark:bg-gray-800 dark:border-gray-700 rounded-lg shadow-sm overflow-hidden"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       ref={cardRef}
