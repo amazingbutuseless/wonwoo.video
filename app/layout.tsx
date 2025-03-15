@@ -21,6 +21,7 @@ const raleway = Raleway({
 export const metadata: Metadata = {
   title: "Wonwoo Video",
   description: "그냥 원우만 보고 싶어",
+  viewport: "width=device-width, initial-scale=1",
 };
 
 export default function RootLayout({
@@ -31,15 +32,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col items-center`}
       >
-        <header className="flex justify-center items-center m-auto mt-6 mb-6 w-sm">
+        <header className="flex justify-center items-center mt-6 mb-6 w-full max-w-md">
           <h1 className={`${raleway.className} antialiased text-xl`}>
             WONWOO VIDEO
           </h1>
         </header>
 
-        <main className="m-auto mb-8 w-sm">{children}</main>
+        <main className="mb-8 w-full max-w-md">{children}</main>
       </body>
     </html>
   );

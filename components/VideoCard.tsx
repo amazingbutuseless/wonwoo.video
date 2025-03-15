@@ -96,7 +96,7 @@ export const VideoCard: React.FC<Video> = (video) => {
         const [entry] = entries;
         setIsVisible(entry.isIntersecting);
       },
-      { threshold: 0.3 }
+      { threshold: 0.9 }
     );
 
     if (cardRef.current) {
