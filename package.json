@@ -6,10 +6,13 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "create:subtitleDb": "ts-node ./scripts/create-subtitle-db.ts"
   },
   "dependencies": {
+    "better-sqlite3": "^11.9.0",
     "dayjs": "^1.11.13",
+    "glob": "^11.0.1",
     "next": "15.2.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
@@ -17,6 +20,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@types/better-sqlite3": "^7.6.12",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
