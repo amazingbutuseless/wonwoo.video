@@ -1,0 +1,10 @@
+{
+  "settings": {
+    "language": "언어 설정"
+  },
+  "video": {
+    "search": {
+      "placeholder": "검색어(e.g. 고양이)를 입력하세요."
+    }
+  }
+}

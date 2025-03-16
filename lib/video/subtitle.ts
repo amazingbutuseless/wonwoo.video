@@ -1,10 +1,12 @@
 "use server";
 
-import * as path from "path";
-import sql from "better-sqlite3";
+import { Pool } from "pg";
 
-const dbPath = path.join(process.cwd(), "lib/video/subtitles.db");
-const db = sql(dbPath);
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  max: 10,
+  idleTimeoutMillis: 30000,
+});
 
 export type Subtitle = {
   videoId: string;
@@ -15,24 +17,27 @@ export type Subtitle = {
 };
 
 export const query = async (keyword: string, language: string = "ko") => {
-  const stmt = db.prepare<[[string, string]], Subtitle>(
-    `
-      SELECT 
-        s.video_id as videoId, 
-        s.language,
-        s.start_time as startTime, 
-        s.end_time as endTime, 
-        s.text
-      FROM 
-        subtitle_search fts
-      JOIN 
-        subtitles s ON fts.rowid = s.id
-      WHERE 
-        fts.text MATCH ? AND s.language = ?
-      ORDER BY 
-        s.video_id, s.start_time
-    `
-  );
+  const client = await pool.connect();
 
-  return stmt.all([keyword, language]);
+  try {
+    const { rows } = await client.query<Subtitle>(
+      `SELECT 
+        video_id as "videoId",
+        language,
+        start_time as "startTime", 
+        end_time as "endTime", 
+        text
+      FROM 
+        subtitles
+      WHERE 
+        text_vector @@ plainto_tsquery('simple', $1) AND language = $2
+      ORDER BY 
+        video_id, start_time`,
+      [keyword, language]
+    );
+
+    return rows;
+  } finally {
+    client.release();
+  }
 };

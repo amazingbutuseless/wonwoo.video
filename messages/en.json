@@ -1,0 +1,10 @@
+{
+  "settings": {
+    "language": "Language settings"
+  },
+  "video": {
+    "search": {
+      "placeholder": "Enter a search term (e.g., cat)."
+    }
+  }
+}

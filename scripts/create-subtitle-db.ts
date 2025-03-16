@@ -34,6 +34,10 @@ function initializeDatabase() {
   `);
 
   db.exec(`
+    CREATE INDEX idx_subtitles_language ON subtitles(language);
+  `);
+
+  db.exec(`
     CREATE VIRTUAL TABLE subtitle_search USING fts5(
       text,
       content='subtitles',
@@ -108,7 +112,6 @@ async function main() {
     );
 
     const vttFiles = await glob("**/*.vtt", { cwd: SUBTITLES_DIR });
-    console.log({ vttFiles });
     console.log(`${vttFiles.length}개의 VTT 파일을 발견했습니다.`);
 
     const transaction = db.transaction(() => {
@@ -147,6 +150,9 @@ async function main() {
     console.log("작업 완료!");
     console.log(`총 ${stats.subtitles.count}개 자막 항목이 처리되었습니다.`);
     console.log(`데이터베이스 저장 위치: ${DB_PATH}`);
+
+    console.log("데이터베이스 최적화 중...");
+    db.exec("VACUUM;");
 
     db.close();
   } catch (error) {

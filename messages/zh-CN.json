@@ -1,0 +1,10 @@
+{
+  "settings": {
+    "language": "语言设置"
+  },
+  "video": {
+    "search": {
+      "placeholder": "输入搜索词（如猫）。"
+    }
+  }
+}

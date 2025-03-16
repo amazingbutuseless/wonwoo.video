@@ -1,0 +1,10 @@
+{
+  "settings": {
+    "language": "語言設定"
+  },
+  "video": {
+    "search": {
+      "placeholder": "輸入搜尋詞彙 (例如：貓)。"
+    }
+  }
+}
