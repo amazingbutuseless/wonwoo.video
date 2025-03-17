@@ -7,6 +7,7 @@ import { routing } from "@/i18n/routing";
 
 import { LocaleSelector } from "../../components/LocaleSelector";
 import "../globals.css";
+import { Link } from "@/i18n/navigation";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -56,9 +57,11 @@ export default async function RootLayout({
       >
         <NextIntlClientProvider>
           <header className="flex justify-center items-center sticky top-0 p-6 w-full max-w-md bg-white/30 backdrop-blur-sm dark:bg-black/30 z-1">
-            <h1 className={`${raleway.className} antialiased text-xl`}>
-              WONWOO VIDEO
-            </h1>
+            <Link href="/" locale={locale} passHref>
+              <h1 className={`${raleway.className} antialiased text-xl`}>
+                WONWOO VIDEO
+              </h1>
+            </Link>
             <LocaleSelector />
           </header>
 

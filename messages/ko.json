@@ -4,7 +4,12 @@
   },
   "video": {
     "search": {
-      "placeholder": "검색어(e.g. 고양이)를 입력하세요."
+      "placeholder": "검색어(e.g. 고양이)를 입력하세요.",
+      "noResult": "검색 결과가 없습니다."
     }
+  },
+  "misc": {
+    "collapse": "접기",
+    "more": "더보기 ({count}개)"
   }
 }

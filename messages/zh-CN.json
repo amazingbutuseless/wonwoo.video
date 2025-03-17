@@ -4,7 +4,12 @@
   },
   "video": {
     "search": {
-      "placeholder": "输入搜索词（如猫）。"
+      "placeholder": "输入搜索词（如猫）。",
+      "noResult": "未找到搜索结果。"
     }
+  },
+  "misc": {
+    "collapse": "折叠",
+    "more": "更多（{count}件)"
   }
 }

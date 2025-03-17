@@ -4,7 +4,12 @@
   },
   "video": {
     "search": {
-      "placeholder": "Enter a search term (e.g., cat)."
+      "placeholder": "Enter a search term (e.g., cat).",
+      "noResult": "No search results found."
     }
+  },
+  "misc": {
+    "collapse": "Collapse",
+    "more": "More ({count, plural, =0 {no items} =1 {one item} other {# items}})"
   }
 }

@@ -1,6 +1,8 @@
 import { query } from "@/lib/video/subtitle";
-import { VideoCard } from "./VideoCard";
 import { getDefaultVideos } from "@/lib/video";
+
+import { VideoCard } from "./VideoCard";
+import { getTranslations } from "next-intl/server";
 
 export async function VideoList({
   params,
@@ -9,6 +11,8 @@ export async function VideoList({
   params: Promise<{ locale: string }>;
   searchParams: Promise<{ keyword?: string }>;
 }) {
+  const t = await getTranslations("video.search");
+
   let displayVideos = getDefaultVideos();
   const { locale } = await params;
   const { keyword } = await searchParams;
@@ -40,9 +44,7 @@ export async function VideoList({
           </div>
         ))
       ) : (
-        <p className="font-sm text-gray-500 text-center">
-          검색 결과가 없습니다.
-        </p>
+        <p className="font-sm text-gray-500 text-center">{t("noResult")}</p>
       )}
     </main>
   );

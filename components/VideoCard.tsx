@@ -4,11 +4,15 @@
 import Link from "next/link";
 import dayjs from "dayjs";
 import { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
+
 import { Subtitle as SubtitleType } from "@/lib/video/subtitle";
 
 const MAX_SUBTITLES = 5;
 
 const Subtitle: React.FC<{ subtitles: SubtitleType[] }> = ({ subtitles }) => {
+  const t = useTranslations();
+
   const [isExpanded, setIsExpanded] = useState(false);
 
   const hasMoreSubtitles = (subtitles || []).length > MAX_SUBTITLES;
@@ -39,8 +43,8 @@ const Subtitle: React.FC<{ subtitles: SubtitleType[] }> = ({ subtitles }) => {
           className="text-sm text-gray-600 mt-2 hover:underline focus:outline-none"
         >
           {isExpanded
-            ? `접기`
-            : `더보기 (${subtitles.length - MAX_SUBTITLES}개)`}
+            ? t('misc.collapse')
+            : t('misc.more', {count: subtitles.length - MAX_SUBTITLES})}
         </button>
       )}
     </div>

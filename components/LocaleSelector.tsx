@@ -69,7 +69,7 @@ export const LocaleSelector = () => {
                 className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                 onClick={handleLocaleSelect}
               >
-                국문
+                한국어
               </Link>
             </li>
             <li>
@@ -100,6 +100,16 @@ export const LocaleSelector = () => {
                 onClick={handleLocaleSelect}
               >
                 中文(繁體)
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/"
+                locale="ja"
+                className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                onClick={handleLocaleSelect}
+              >
+                日本語
               </Link>
             </li>
           </ul>

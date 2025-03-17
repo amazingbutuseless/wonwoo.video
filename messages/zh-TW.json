@@ -4,7 +4,12 @@
   },
   "video": {
     "search": {
-      "placeholder": "輸入搜尋詞彙 (例如：貓)。"
+      "placeholder": "輸入搜尋詞彙 (例如：貓)。",
+      "noResult": "未找到搜尋結果。"
     }
+  },
+  "misc": {
+    "collapse": "崩潰",
+    "more": "更多 ({count}件)"
   }
 }
