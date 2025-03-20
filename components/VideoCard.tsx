@@ -3,55 +3,9 @@
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import dayjs from "dayjs";
-import { useEffect, useRef, useState } from "react";
-import { useTranslations } from "next-intl";
+import { PropsWithChildren, useEffect, useRef, useState } from "react";
 
-import { Subtitle as SubtitleType } from "@/lib/video/subtitle";
-
-const MAX_SUBTITLES = 5;
-
-const Subtitle: React.FC<{ subtitles: SubtitleType[] }> = ({ subtitles }) => {
-  const t = useTranslations();
-
-  const [isExpanded, setIsExpanded] = useState(false);
-
-  const hasMoreSubtitles = (subtitles || []).length > MAX_SUBTITLES;
-
-  return (
-    <div className="p-4">
-      <hr className="border-0 mb-4 w-[40px] h-[1px] bg-gray-200" />
-
-      {(isExpanded ? subtitles : subtitles.slice(0, MAX_SUBTITLES)).map(
-        (subtitle) => (
-          <blockquote key={subtitle.startTime} className="mb-2">
-            <p className="text-gray-900 dark:text-gray-200 text-sm">
-              {subtitle.text}
-            </p>
-            <cite className="not-italic text-xs text-gray-500">
-              {subtitle.startTime}
-            </cite>
-          </blockquote>
-        )
-      )}
-
-      {hasMoreSubtitles && (
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            setIsExpanded(!isExpanded);
-          }}
-          className="text-sm text-gray-600 mt-2 hover:underline focus:outline-none"
-        >
-          {isExpanded
-            ? t('misc.collapse')
-            : t('misc.more', {count: subtitles.length - MAX_SUBTITLES})}
-        </button>
-      )}
-    </div>
-  );
-};
-
-export const VideoCard: React.FC<Video> = (video) => {
+export const VideoCard: React.FC<PropsWithChildren<Video>> = (props) => {
   const cardRef = useRef<HTMLElement>(null);
   const animationRef = useRef<number | null>(null);
 
@@ -60,6 +14,8 @@ export const VideoCard: React.FC<Video> = (video) => {
   const [currentFrame, setCurrentFrame] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const [isTouchDevice, setIsTouchDevice] = useState(false);
+
+  const { children, ...video } = props;
 
   const spriteConfig = {
     columns: 10,
@@ -151,7 +107,6 @@ export const VideoCard: React.FC<Video> = (video) => {
 
   return (
     <article
-      key={video.id}
       className="relative border border-gray-200 bg-white dark:bg-gray-800 dark:border-gray-700 rounded-lg shadow-sm overflow-hidden"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -180,17 +135,7 @@ export const VideoCard: React.FC<Video> = (video) => {
         </div>
       </Link>
 
-      {/* {video.tags.length > 0 && (
-        <div className="flex flex-wrap p-4 pt-0">
-          {video.tags.map((tag) => (
-            <span key={tag} className="text-sm underline">
-              {tag}
-            </span>
-          ))}
-        </div>
-      )} */}
-
-      {video.subtitles && <Subtitle subtitles={video.subtitles} />}
+      {children}
     </article>
   );
 };

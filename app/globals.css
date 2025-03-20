@@ -24,3 +24,26 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+@keyframes floating {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate(var(--move-x1), var(--move-y1)) rotate(var(--rotate1));
+  }
+  50% {
+    transform: translate(var(--move-x2), var(--move-y2)) rotate(var(--rotate2));
+  }
+  75% {
+    transform: translate(var(--move-x1), calc(-1 * var(--move-y1)))
+      rotate(var(--rotate1));
+  }
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+}
+
+.word-floating {
+  animation: floating var(--duration) ease-in-out var(--delay) infinite;
+}

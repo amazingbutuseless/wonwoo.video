@@ -3,13 +3,15 @@
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
-import { useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
 import { useRouter } from "@/i18n/navigation";
 
 export const SubtitleSearch = () => {
   const router = useRouter();
+
   const searchParams = useSearchParams();
+  const keyword = searchParams.get("keyword");
 
   const t = useTranslations();
 
@@ -29,13 +31,19 @@ export const SubtitleSearch = () => {
     [router]
   );
 
+  useEffect(() => {
+    if (!keyword && inputRef.current) {
+      inputRef.current.value = "";
+    }
+  }, [keyword]);
+
   return (
-    <form className="relative m-4 mt-0" onSubmit={handleSearch}>
+    <form className="relative" onSubmit={handleSearch}>
       <input
         type="text"
         name="keyword"
-        defaultValue={searchParams.get("keyword") || ""}
-        className="border border-gray-200 rounded-full w-full p-2 pl-4 pr-12 h-12"
+        defaultValue={keyword || ""}
+        className="border border-gray-200 bg-white rounded-full w-full p-2 pl-4 pr-12 h-12 dark:bg-black"
         placeholder={t("video.search.placeholder")}
         ref={inputRef}
       />

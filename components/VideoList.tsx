@@ -1,21 +1,27 @@
+import { getTranslations } from "next-intl/server";
+
 import { query } from "@/lib/video/subtitle";
 import { getDefaultVideos } from "@/lib/video";
 
 import { VideoCard } from "./VideoCard";
-import { getTranslations } from "next-intl/server";
+import { VoiceOnlyCard } from "./VoiceOnlyCard";
+import { Subtitle } from "./Subtitle";
+import { TagLink } from "./TagLink";
 
-export async function VideoList({
-  params,
-  searchParams,
-}: {
-  params: Promise<{ locale: string }>;
-  searchParams: Promise<{ keyword?: string }>;
-}) {
+type Props = {
+  locale: string;
+  keyword?: string;
+  tag?: string;
+};
+
+export async function VideoList({ locale, keyword, tag }: Props) {
   const t = await getTranslations("video.search");
 
   let displayVideos = getDefaultVideos();
-  const { locale } = await params;
-  const { keyword } = await searchParams;
+
+  if (tag) {
+    displayVideos = displayVideos.filter((video) => video.tags.includes(tag));
+  }
 
   if (keyword) {
     const results = await query(keyword, locale);
@@ -38,11 +44,25 @@ export async function VideoList({
   return (
     <main className="flex flex-col gap-4 m-4">
       {displayVideos.length > 0 ? (
-        displayVideos.map((video) => (
-          <div key={video.id} className="flex gap-4 items-start">
-            <VideoCard {...video} />
-          </div>
-        ))
+        displayVideos.map((video) => {
+          const Component = video.isVoiceOnly ? VoiceOnlyCard : VideoCard;
+          return (
+            <div key={video.id} className="flex gap-4 items-start">
+              <Component {...video}>
+                <>
+                  {video.tags.length > 0 && (
+                    <div className="flex flex-wrap p-4 pt-0">
+                      {video.tags.map((tag) => (
+                        <TagLink key={tag} tag={tag} locale={locale} />
+                      ))}
+                    </div>
+                  )}
+                  {video.subtitles && <Subtitle subtitles={video.subtitles} />}
+                </>
+              </Component>
+            </div>
+          );
+        })
       ) : (
         <p className="font-sm text-gray-500 text-center">{t("noResult")}</p>
       )}

@@ -39,7 +39,6 @@ export const LocaleSelector = () => {
     <div className="relative ml-auto">
       <button
         type="button"
-        data-dropdown-toggle="dropdownDots"
         className="inline-flex items-center p-2 text-sm font-medium text-center text-gray-900 bg-white rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none dark:text-white focus:ring-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
         onClick={() => setIsExpanded((prev) => !prev)}
         ref={buttonRef}
@@ -55,7 +54,7 @@ export const LocaleSelector = () => {
 
       {isExpanded && (
         <div
-          className="absolute right-0 top-[48px] z-10 bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 dark:bg-gray-700"
+          className="absolute right-0 z-10 bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 dark:bg-gray-700"
           ref={dropdownRef}
         >
           <ul

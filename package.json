@@ -10,8 +10,8 @@
     "create:subtitleDb": "ts-node ./scripts/create-subtitle-db.ts"
   },
   "dependencies": {
-    "better-sqlite3": "^11.9.0",
     "dayjs": "^1.11.13",
+    "firebase": "^11.4.0",
     "glob": "^11.0.1",
     "next": "15.2.2",
     "next-intl": "^4.0.2",

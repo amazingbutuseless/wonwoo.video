@@ -4,10 +4,11 @@ import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 
 import { routing } from "@/i18n/routing";
+import { Link } from "@/i18n/navigation";
+import { FirebaseProvider } from "@/lib/auth/FIrebaseProvider";
 
 import { LocaleSelector } from "../../components/LocaleSelector";
 import "../globals.css";
-import { Link } from "@/i18n/navigation";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -56,16 +57,18 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col items-center`}
       >
         <NextIntlClientProvider>
-          <header className="flex justify-center items-center sticky top-0 p-6 w-full max-w-md bg-white/30 backdrop-blur-sm dark:bg-black/30 z-1">
-            <Link href="/" locale={locale} passHref>
-              <h1 className={`${raleway.className} antialiased text-xl`}>
-                WONWOO VIDEO
-              </h1>
-            </Link>
-            <LocaleSelector />
-          </header>
+          <FirebaseProvider>
+            <header className="flex justify-center items-center sticky top-0 pt-3 pb-3 pl-6 pr-6 w-full max-w-md bg-white/30 backdrop-blur-sm dark:bg-black/30 z-10">
+              <Link href="/" locale={locale} passHref>
+                <h1 className={`${raleway.className} antialiased text-xl`}>
+                  WONWOO VIDEO
+                </h1>
+              </Link>
+              <LocaleSelector />
+            </header>
 
-          <main className="mb-8 w-full max-w-md">{children}</main>
+            <main className="mb-8 w-full max-w-md">{children}</main>
+          </FirebaseProvider>
         </NextIntlClientProvider>
       </body>
     </html>
