@@ -1,14 +1,16 @@
-import { Loader } from "@/components/Loader";
-import { SubtitleSearch } from "@/components/SubtitleSearch";
-import { VideoList } from "@/components/VideoList";
-import { Link } from "@/i18n/navigation";
 import Image from "next/image";
 import { Suspense } from "react";
+
+import { InfiniteVideoList } from "@/components/InfiniteVideoList";
+import { Loader } from "@/components/Loader";
+import { SubtitleSearch } from "@/components/SubtitleSearch";
+import { Link } from "@/i18n/navigation";
+import { PaginationParams } from "@/lib/video";
+import { getMoreVideos } from "@/lib/video/actions";
 
 function createUrlWithoutTag(searchParams: { keyword?: string; tag?: string }) {
   const params = new URLSearchParams();
 
-  // tag를 제외한 모든 파라미터 추가
   Object.entries(searchParams).forEach(([key, value]) => {
     if (key !== "tag" && value) {
       params.set(key, value);
@@ -19,31 +21,43 @@ function createUrlWithoutTag(searchParams: { keyword?: string; tag?: string }) {
   return queryString ? `/?${queryString}` : "/";
 }
 
-export default async function Home({
-  params,
-  searchParams,
-}: {
+type Props = {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ keyword?: string; tag?: string }>;
-}) {
+  searchParams: Promise<
+    Omit<PaginationParams, "tag" | "limit" | "publishedOnly"> & {
+      keyword?: string;
+      tag?: string;
+    }
+  >;
+};
+
+export default async function Home({ params, searchParams }: Props) {
   const { locale } = await params;
-  const { keyword, tag } = await searchParams;
+  const { keyword, tag, cursor } = await searchParams;
+
+  const { videos, nextCursor } = await getMoreVideos({ tag, keyword, locale });
 
   return (
-    <>
+    <div className={tag ? "pb-12" : ""}>
       <div className="p-6 pt-0 pb-3">
         <SubtitleSearch />
       </div>
 
       <Suspense
-        key={keyword}
+        key={cursor || keyword || tag}
         fallback={
           <div className="flex justify-center items-center">
             <Loader />
           </div>
         }
       >
-        <VideoList locale={locale} keyword={keyword} tag={tag} />
+        <InfiniteVideoList
+          initialVideos={videos}
+          initialNextCursor={nextCursor}
+          locale={locale}
+          keyword={keyword}
+          tag={tag}
+        />
       </Suspense>
 
       {tag && (
@@ -62,6 +76,6 @@ export default async function Home({
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }

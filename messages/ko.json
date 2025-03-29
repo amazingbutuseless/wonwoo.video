@@ -10,6 +10,7 @@
   },
   "misc": {
     "collapse": "접기",
-    "more": "더보기 ({count}개)"
+    "moreWithCount": "더보기 ({count}개)",
+    "more": "더보기"
   }
 }

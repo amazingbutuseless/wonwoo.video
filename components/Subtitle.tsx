@@ -43,7 +43,9 @@ export const Subtitle: React.FC<{ subtitles: SubtitleType[] }> = ({
         >
           {isExpanded
             ? t("misc.collapse")
-            : t("misc.more", { count: subtitles.length - MAX_SUBTITLES })}
+            : t("misc.moreWithCount", {
+                count: subtitles.length - MAX_SUBTITLES,
+              })}
         </button>
       )}
     </div>

@@ -10,6 +10,7 @@
   },
   "misc": {
     "collapse": "折叠",
-    "more": "更多（{count}件)"
+    "moreWithCount": "更多（{count}件)",
+    "more": "更多"
   }
 }

@@ -4,7 +4,8 @@ type Video = {
   title: string;
   imageUrl?: string;
   airedAt: string;
-  tags: string[];
-  subtitles?: Subtitle[];
   isVoiceOnly?: boolean;
+  tags: string[];
+  published?: boolean;
+  subtitles?: Subtitle[];
 };

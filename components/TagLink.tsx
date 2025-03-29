@@ -11,6 +11,8 @@ export const TagLink = ({ tag, locale }: { tag: string; locale: string }) => {
   const createTagLink = useCallback(() => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("tag", tag);
+    params.delete("keyword");
+    params.delete("cursor");
     return `${pathname}?${params.toString()}`;
   }, [pathname, searchParams, tag]);
 

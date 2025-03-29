@@ -10,6 +10,7 @@
   },
   "misc": {
     "collapse": "折りたたむ",
-    "more": "もっと見る（{count}個）"
+    "moreWithCount": "もっと見る（{count}個）",
+    "more": "もっと見る"
   }
 }
