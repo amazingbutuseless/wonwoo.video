@@ -2,7 +2,7 @@
 
 import * as Firestore from "firebase/firestore/lite";
 
-import { db } from "./firebase";
+import { db } from "../firebase";
 
 export type Keyword = {
   keywords: string[];

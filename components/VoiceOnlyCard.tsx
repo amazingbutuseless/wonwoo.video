@@ -6,7 +6,7 @@ import { useLocale } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
 import { getKeywords, Keyword } from "@/lib/keyword";
-import { useFirebaseContext } from "@/lib/auth/FIrebaseProvider";
+import { useFirebaseContext } from "@/lib/auth/FirebaseProvider";
 
 import { MIN_CONTAINER_HEIGHT, WordCloud } from "./WordCloud";
 import { Loader } from "./Loader";

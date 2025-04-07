@@ -29,7 +29,6 @@ if (isFirebaseAppInitialized) {
   authApp = Auth.initializeAuth(firebaseApp);
 }
 
-export const app = initializeApp(firebaseConfig);
-export const db = Firestore.getFirestore(app);
+export const db = Firestore.getFirestore(firebaseApp);
 
-export { authApp };
+export { firebaseApp as app, authApp };

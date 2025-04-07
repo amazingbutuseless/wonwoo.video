@@ -1,6 +1,12 @@
 {
   "settings": {
-    "language": "语言设置"
+    "title": "设置",
+    "language": "语言",
+    "notifications": "通知",
+    "notificationsEnabled": "您正在接收通知。",
+    "notificationsDisabled": "启用通知以在上传新视频时接收警报。",
+    "requiredPermissionForNotifications": "通知权限已被拒绝。\n您需要允许权限才能接收通知。",
+    "requiredAddingHomeForNotifications": "您可以在添加到主屏幕后启用通知。"
   },
   "video": {
     "search": {
@@ -11,6 +17,7 @@
   "misc": {
     "collapse": "折叠",
     "moreWithCount": "更多（{count}件)",
-    "more": "更多"
+    "more": "更多",
+    "isProcessing": "处理中..."
   }
 }
