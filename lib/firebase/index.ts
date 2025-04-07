@@ -1,6 +1,6 @@
 "use client";
 
-import { FirebaseApp, getApp, getApps, initializeApp } from "firebase/app";
+import { getApp, getApps, initializeApp } from "firebase/app";
 import * as Firestore from "firebase/firestore/lite";
 import * as Auth from "firebase/auth";
 
@@ -18,7 +18,9 @@ const firebaseConfig = {
 
 const isFirebaseAppInitialized = getApps().length > 0;
 
-const firebaseApp = isFirebaseAppInitialized ? getApp(): initializeApp(firebaseConfig);
+const firebaseApp = isFirebaseAppInitialized
+  ? getApp()
+  : initializeApp(firebaseConfig);
 
 export const authApp = Auth.getAuth(firebaseApp);
 export const db = Firestore.getFirestore(firebaseApp);

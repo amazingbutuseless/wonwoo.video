@@ -28,12 +28,12 @@ const formSchema = z.object({
     .refine((keywords) => keywords.some((k) => k.value.trim().length > 0), {
       message: "최소 1개 이상의 유효한 키워드를 입력해주세요",
     }),
-  translations: z.record(z.string(), z.record(z.string(), z.string())).optional(),
+  translated: z.record(z.string(), z.record(z.string(), z.string())).optional(),
 });
 
 type KeywordsData = z.infer<typeof formSchema>;
 
-export const KeywordsPage = () => {
+const KeywordsPage = () => {
   const [step, setStep] = useState<"id" | "keywords">("id");
   const [isLoading, setIsLoading] = useState(false);
   const [existingData, setExistingData] = useState<Keyword | null>(null);
@@ -45,7 +45,7 @@ export const KeywordsPage = () => {
     defaultValues: {
       id: "",
       keywords: [{ value: "" }],
-      translations: {},
+      translated: {},
     },
     mode: "onSubmit",
   });
@@ -76,11 +76,11 @@ export const KeywordsPage = () => {
     index: number
   ) => {
     const value = e.target.value;
-    
+
     if (value.endsWith(",")) {
       const newValue = value.slice(0, -1).trim();
-      formMethods.setValue(`keywords.${index}.value`, newValue, { 
-        shouldDirty: true
+      formMethods.setValue(`keywords.${index}.value`, newValue, {
+        shouldDirty: true,
       });
       append({ value: "" });
 
@@ -125,33 +125,40 @@ export const KeywordsPage = () => {
 
       if (data) {
         setExistingData(data);
-        
+
         // 먼저 키워드 배열 준비
-        const keywordsArray = data.keywords && Array.isArray(data.keywords) 
-          ? data.keywords.map((k: string) => ({ value: k }))
-          : [{ value: "" }];
-        
+        const keywordsArray =
+          data.keywords && Array.isArray(data.keywords)
+            ? data.keywords.map((k: string) => ({ value: k }))
+            : [{ value: "" }];
+
         // fields 상태 직접 업데이트
         replace(keywordsArray);
-        
+
         // 그 다음 폼 상태 리셋
-        reset({
-          id: videoId,
-          keywords: keywordsArray,
-          translations: data.translated || {},
-        }, {
-          keepDirty: false,
-          keepValues: true
-        });
+        reset(
+          {
+            id: videoId,
+            keywords: keywordsArray,
+            translated: data.translated || {},
+          },
+          {
+            keepDirty: false,
+            keepValues: true,
+          }
+        );
 
         setStep("keywords");
-        showAlert("info", "기존 키워드를 불러왔습니다. 필요시 수정 후 저장하세요.");
+        showAlert(
+          "info",
+          "기존 키워드를 불러왔습니다. 필요시 수정 후 저장하세요."
+        );
       } else {
         replace([{ value: "" }]);
         reset({
           id: videoId,
           keywords: [{ value: "" }],
-          translations: {},
+          translated: {},
         });
         setExistingData(null);
         setStep("keywords");
@@ -177,12 +184,12 @@ export const KeywordsPage = () => {
         .map((k) => k.value.trim())
         .filter(Boolean);
 
-      const keywordsDoc: any = {};
+      const keywordsDoc: Partial<Keyword> = {};
 
       const hasKeywordsChanged = isKeywordsChanged();
 
       if (!hasKeywordsChanged) {
-        keywordsDoc.translated = data.translations || {};
+        keywordsDoc.translated = data.translated || {};
       } else {
         keywordsDoc.keywords = filteredKeywords;
         if (existingData?.translated) {
@@ -191,21 +198,23 @@ export const KeywordsPage = () => {
       }
 
       await Firestore.setDoc(
-        Firestore.doc(db, "vo_keywords", data.id.trim()), 
+        Firestore.doc(db, "vo_keywords", data.id.trim()),
         keywordsDoc,
         { merge: true }
       );
 
       showAlert("success", "키워드가 성공적으로 저장되었습니다.");
-      
-      reset({
-        id: data.id,
-        keywords: filteredKeywords.map(k => ({ value: k })),
-        translations: !hasKeywordsChanged ? (data.translations || {}) : {},
-      }, {
-        keepDirty: false
-      });
-      
+
+      reset(
+        {
+          id: data.id,
+          keywords: filteredKeywords.map((k) => ({ value: k })),
+          translated: !hasKeywordsChanged ? data.translated || {} : {},
+        },
+        {
+          keepDirty: false,
+        }
+      );
     } catch (error) {
       console.error("키워드 저장 오류:", error);
       setError("root", {
@@ -214,17 +223,21 @@ export const KeywordsPage = () => {
       });
     }
   };
-  
-  const handleTranslationChange = (keywordIdx: string, lang: string, value: string) => {
-    const currentTranslations = formMethods.getValues('translations') || {};
+
+  const handleTranslationChange = (
+    keywordIdx: string,
+    lang: string,
+    value: string
+  ) => {
+    const currentTranslations = formMethods.getValues("translated") || {};
     const keywordTranslations = currentTranslations[keywordIdx] || {};
-    
-    formMethods.setValue('translations', {
+
+    formMethods.setValue("translated", {
       ...currentTranslations,
       [keywordIdx]: {
         ...keywordTranslations,
-        [lang]: value
-      }
+        [lang]: value,
+      },
     });
   };
 
@@ -256,16 +269,40 @@ export const KeywordsPage = () => {
           <div className="flex items-center">
             <div className="flex-shrink-0 mr-3">
               {alert.type === "success" ? (
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                <svg
+                  className="w-5 h-5"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clipRule="evenodd"
+                  />
                 </svg>
               ) : alert.type === "info" ? (
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                <svg
+                  className="w-5 h-5"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                    clipRule="evenodd"
+                  />
                 </svg>
               ) : (
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                <svg
+                  className="w-5 h-5"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                    clipRule="evenodd"
+                  />
                 </svg>
               )}
             </div>
@@ -279,7 +316,11 @@ export const KeywordsPage = () => {
           <div className="flex items-center">
             <div className="flex-shrink-0 mr-3">
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                  clipRule="evenodd"
+                />
               </svg>
             </div>
             <span>{errors.root.message}</span>
@@ -341,8 +382,18 @@ export const KeywordsPage = () => {
                     onClick={() => setStep("id")}
                     className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 flex items-center"
                   >
-                    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    <svg
+                      className="w-4 h-4 mr-1"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 19l-7-7 7-7"
+                      />
                     </svg>
                     ID 변경
                   </button>
@@ -355,7 +406,8 @@ export const KeywordsPage = () => {
                         키워드
                       </h3>
                       <span className="text-xs text-gray-500 dark:text-gray-400 italic">
-                        각 키워드 입력 후 쉼표(,)를 입력하면 새 입력란이 추가됩니다
+                        각 키워드 입력 후 쉼표(,)를 입력하면 새 입력란이
+                        추가됩니다
                       </span>
                     </div>
 
@@ -366,11 +418,15 @@ export const KeywordsPage = () => {
                             <input
                               {...register(`keywords.${index}.value`)}
                               ref={(e) => {
-                                const { ref } = register(`keywords.${index}.value`);
+                                const { ref } = register(
+                                  `keywords.${index}.value`
+                                );
                                 ref(e);
                                 inputRefs.current[index] = e;
                               }}
-                              onChange={(e) => handleKeywordInputChange(e, index)}
+                              onChange={(e) =>
+                                handleKeywordInputChange(e, index)
+                              }
                               className={`w-full border ${
                                 errors.keywords?.[index]
                                   ? "border-red-500"
@@ -391,27 +447,43 @@ export const KeywordsPage = () => {
                             disabled={fields.length <= 1}
                             title="키워드 삭제"
                           >
-                            <Image src="/close.svg" alt="삭제" width={16} height={16} />
+                            <Image
+                              src="/close.svg"
+                              alt="삭제"
+                              width={16}
+                              height={16}
+                            />
                           </button>
                         </div>
                       ))}
                     </div>
-                    
+
                     {errors.keywords && !Array.isArray(errors.keywords) && (
                       <p className="mt-2 text-sm text-red-600 dark:text-red-400">
                         {errors.keywords.message}
                       </p>
                     )}
-                    
+
                     {isKeywordsChanged() && existingData?.translated && (
                       <div className="mt-4 p-3 bg-amber-50 border-l-4 border-amber-500 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-500 rounded-md">
                         <div className="flex items-start">
-                          <svg className="w-5 h-5 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                          <svg
+                            className="w-5 h-5 mr-2 mt-0.5"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                              clipRule="evenodd"
+                            />
                           </svg>
                           <div>
                             <p className="font-medium">키워드 변경 감지됨</p>
-                            <p className="text-sm mt-1">키워드가 변경되면 번역 데이터가 무시됩니다. 번역은 키워드 저장 후 다시 생성해야 합니다.</p>
+                            <p className="text-sm mt-1">
+                              키워드가 변경되면 번역 데이터가 무시됩니다. 번역은
+                              키워드 저장 후 다시 생성해야 합니다.
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -419,7 +491,11 @@ export const KeywordsPage = () => {
                   </section>
 
                   {existingData?.translated && (
-                    <section className={`bg-gray-50 dark:bg-gray-750 rounded-lg border border-gray-200 dark:border-gray-700 ${isKeywordsChanged() ? "opacity-70" : ""}`}>
+                    <section
+                      className={`bg-gray-50 dark:bg-gray-750 rounded-lg border border-gray-200 dark:border-gray-700 ${
+                        isKeywordsChanged() ? "opacity-70" : ""
+                      }`}
+                    >
                       <div className="p-4 border-b border-gray-200 dark:border-gray-700">
                         <div className="flex justify-between items-center">
                           <h3 className="font-medium text-gray-800 dark:text-gray-200">
@@ -432,23 +508,23 @@ export const KeywordsPage = () => {
                           )}
                         </div>
                         <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                          {isKeywordsChanged() 
+                          {isKeywordsChanged()
                             ? "키워드 변경 시 번역 데이터는 저장되지 않습니다. 키워드 저장 후 다시 번역을 생성하세요."
                             : "기존에 등록된 번역 키워드를 수정할 수 있습니다"}
                         </p>
                       </div>
-                      
+
                       <div className="p-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           {Object.entries(existingData.translated).map(
                             ([keywordIdx, value]) => {
                               const idx = parseInt(keywordIdx, 10);
                               const keyword = existingData.keywords[idx];
-                              
+
                               if (!keyword) return null;
-                              
+
                               return (
-                                <div 
+                                <div
                                   key={`translation-${keywordIdx}`}
                                   className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden"
                                 >
@@ -458,29 +534,36 @@ export const KeywordsPage = () => {
                                     </h4>
                                   </div>
                                   <div className="p-3 space-y-2">
-                                    {Object.entries(value).map(([lang, translatedValue]) => (
-                                      <div
-                                        key={`${lang}-${keywordIdx}`}
-                                        className="flex items-center gap-3"
-                                      >
-                                        <span className="font-medium text-gray-600 dark:text-gray-400 min-w-[40px] text-sm uppercase">
-                                          {lang}
-                                        </span>
-                                        <input
-                                          type="text"
-                                          className={`flex-1 border ${
-                                            isKeywordsChanged() 
-                                              ? "bg-gray-100 dark:bg-gray-800" 
-                                              : "border-gray-300 dark:border-gray-600"
-                                          } rounded-md px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white`}
-                                          defaultValue={translatedValue}
-                                          readOnly={isKeywordsChanged()}
-                                          onChange={(e) => 
-                                            !isKeywordsChanged() && handleTranslationChange(keywordIdx, lang, e.target.value)
-                                          }
-                                        />
-                                      </div>
-                                    ))}
+                                    {Object.entries(value).map(
+                                      ([lang, translatedValue]) => (
+                                        <div
+                                          key={`${lang}-${keywordIdx}`}
+                                          className="flex items-center gap-3"
+                                        >
+                                          <span className="font-medium text-gray-600 dark:text-gray-400 min-w-[40px] text-sm uppercase">
+                                            {lang}
+                                          </span>
+                                          <input
+                                            type="text"
+                                            className={`flex-1 border ${
+                                              isKeywordsChanged()
+                                                ? "bg-gray-100 dark:bg-gray-800"
+                                                : "border-gray-300 dark:border-gray-600"
+                                            } rounded-md px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white`}
+                                            defaultValue={translatedValue}
+                                            readOnly={isKeywordsChanged()}
+                                            onChange={(e) =>
+                                              !isKeywordsChanged() &&
+                                              handleTranslationChange(
+                                                keywordIdx,
+                                                lang,
+                                                e.target.value
+                                              )
+                                            }
+                                          />
+                                        </div>
+                                      )
+                                    )}
                                   </div>
                                 </div>
                               );
