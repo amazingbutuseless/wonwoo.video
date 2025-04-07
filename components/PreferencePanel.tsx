@@ -220,7 +220,11 @@ export const PreferencePanel = ({
                   }
                   ${isIOSBrowser ? "opacity-50 cursor-not-allowed" : ""}
                 `}
-                title={isIOSBrowser ? t("settings.iosInstallRequired") : ""}
+                title={
+                  isIOSBrowser
+                    ? t("settings.requiredAddingHomeForNotifications")
+                    : ""
+                }
               >
                 <span className="sr-only">{t("settings.notifications")}</span>
                 <span

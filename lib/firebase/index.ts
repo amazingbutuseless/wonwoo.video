@@ -16,19 +16,11 @@ const firebaseConfig = {
   measurementId: "G-NC0JQM512T",
 };
 
-let firebaseApp: FirebaseApp;
-let authApp: Auth.Auth;
-
 const isFirebaseAppInitialized = getApps().length > 0;
 
-if (isFirebaseAppInitialized) {
-  firebaseApp = getApp();
-  authApp = Auth.getAuth(firebaseApp);
-} else {
-  firebaseApp = initializeApp(firebaseConfig);
-  authApp = Auth.initializeAuth(firebaseApp);
-}
+const firebaseApp = isFirebaseAppInitialized ? getApp(): initializeApp(firebaseConfig);
 
+export const authApp = Auth.getAuth(firebaseApp);
 export const db = Firestore.getFirestore(firebaseApp);
 
-export { firebaseApp as app, authApp };
+export { firebaseApp as app };

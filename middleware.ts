@@ -10,18 +10,20 @@ export default async function middleware(request: NextRequest) {
 
   if (isVercelPreview) {
     const authHeader = request.headers.get("authorization");
-    
+
     const username = process.env.PREVIEW_USERNAME || "admin";
     const password = process.env.PREVIEW_PASSWORD || "password";
-    
-    const validAuth = `Basic ${Buffer.from(`${username}:${password}`).toString("base64")}`;
-    
+
+    const validAuth = `Basic ${Buffer.from(`${username}:${password}`).toString(
+      "base64"
+    )}`;
+
     if (authHeader !== validAuth) {
       return new NextResponse("Authentication required", {
         status: 401,
         headers: {
-          "WWW-Authenticate": "Basic realm='Secure Area'"
-        }
+          "WWW-Authenticate": "Basic realm='Secure Area'",
+        },
       });
     }
   }
@@ -30,5 +32,5 @@ export default async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: "/((?!api|trpc|_next|_vercel|.*\\..*).*)",
+  matcher: "/((?!api|cms|trpc|_next|_vercel|.*\\..*).*)",
 };
