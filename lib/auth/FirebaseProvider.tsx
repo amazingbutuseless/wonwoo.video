@@ -7,6 +7,7 @@ import {
   useEffect,
   useRef,
   useState,
+  useCallback,
 } from "react";
 import * as Auth from "firebase/auth";
 import { User } from "firebase/auth";
@@ -16,7 +17,8 @@ import { useLocale } from "next-intl";
 import { authApp, app } from "@/lib/firebase";
 import { useToast } from "@/components/Toast";
 
-import { internationalize, subscribe, unsubscribe } from "../push";
+import { subscribe, unsubscribe } from "../push";
+import { LocaleStorageKey, read, remove, save } from "../storage";
 
 const FirebaseContext = createContext<{
   user: User | null;
@@ -30,41 +32,85 @@ const FirebaseContext = createContext<{
 
 export const FirebaseProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const locale = useLocale();
-
   const { showToast } = useToast();
-
   const [user, setUser] = useState<User | null>(null);
   const loginAttemptedRef = useRef(false);
-
   const messagingApp = useRef<FCM.Messaging | null>(null);
 
-  const subscribePushMessage = () => {
-    if (!messagingApp.current) return Promise.resolve(false);
-    return subscribe(messagingApp.current);
-  };
+  const unsubscribePushMessage = useCallback(
+    async (targetLocale = locale) => {
+      if (!messagingApp.current) return false;
 
-  const unsubscribePushMessage = () => {
-    if (!messagingApp.current) return Promise.resolve(true);
-    return unsubscribe(messagingApp.current);
-  };
+      const previousSubscribedLocale = await read<string>(
+        LocaleStorageKey.FCM_SUBSCRIBED_LOCALE
+      );
+
+      const shouldBeRemoved =
+        previousSubscribedLocale && previousSubscribedLocale === targetLocale;
+
+      const result = await unsubscribe(messagingApp.current, targetLocale);
+
+      if (result && shouldBeRemoved) {
+        await remove(LocaleStorageKey.FCM_SUBSCRIBED_LOCALE);
+      }
+
+      return result;
+    },
+    [locale]
+  );
+
+  const subscribePushMessage = useCallback(async () => {
+    if (!messagingApp.current) return false;
+
+    const previousSubscribedLocale = await read<string>(
+      LocaleStorageKey.FCM_SUBSCRIBED_LOCALE
+    );
+
+    if (previousSubscribedLocale && previousSubscribedLocale === locale) {
+      return true;
+    }
+
+    if (previousSubscribedLocale && locale !== previousSubscribedLocale) {
+      await unsubscribePushMessage(previousSubscribedLocale);
+    }
+
+    const result = await subscribe(messagingApp.current, locale);
+    if (result) {
+      await save(LocaleStorageKey.FCM_SUBSCRIBED_LOCALE, locale);
+    }
+    return result;
+  }, [locale, unsubscribePushMessage]);
 
   useEffect(() => {
-    const unsubscribe = Auth.onAuthStateChanged(authApp, (currentUser) => {
+    return Auth.onAuthStateChanged(authApp, (currentUser) => {
       setUser(currentUser);
 
       if (!currentUser && !loginAttemptedRef.current) {
         loginAttemptedRef.current = true;
-
         Auth.signInAnonymously(authApp).catch((err) => {
           console.error("로그인 오류:", err);
         });
       }
     });
-
-    return () => {
-      unsubscribe();
-    };
   }, []);
+
+  useEffect(() => {
+    const updateSubscription = async () => {
+      if (typeof window === "undefined") return;
+
+      const notificationsEnabled =
+        localStorage.getItem("notifications-enabled") === "true";
+      if (!notificationsEnabled) return;
+
+      try {
+        await subscribePushMessage();
+      } catch {
+        console.error("FCM 구독 실패");
+      }
+    };
+
+    updateSubscription();
+  }, [locale]);
 
   useEffect(() => {
     const messaging = messagingApp.current || FCM.getMessaging(app);
@@ -74,18 +120,10 @@ export const FirebaseProvider: React.FC<PropsWithChildren> = ({ children }) => {
     }
 
     return FCM.onMessage(messaging, (payload) => {
-      if (!payload.data) return;
-
-      if (payload.data?.type === "update") {
-        const { title, body } = internationalize(locale, payload.data);
-        showToast(
-          title,
-          body,
-          payload.notification?.icon || "/default-icon.png"
-        );
-      }
+      const { title = "", body = "", icon } = payload.data || {};
+      showToast(title, body, icon || "/default-icon.png");
     });
-  }, [locale, showToast]);
+  }, [showToast]);
 
   return (
     <FirebaseContext.Provider

@@ -5,7 +5,6 @@ import { hasLocale, NextIntlClientProvider } from "next-intl";
 
 import { routing } from "@/i18n/routing";
 import { Link } from "@/i18n/navigation";
-import { LocaleSync } from "@/i18n/LocaleSync";
 import { FirebaseProvider } from "@/lib/auth/FirebaseProvider";
 import { Preference } from "@/components/Preference";
 import { ToastProvider } from "@/components/Toast";
@@ -88,8 +87,6 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col items-center min-h-screen`}
       >
         <NextIntlClientProvider>
-          <LocaleSync />
-
           <ToastProvider>
             <FirebaseProvider>
               <header

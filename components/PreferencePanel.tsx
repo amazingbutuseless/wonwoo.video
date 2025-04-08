@@ -7,14 +7,7 @@ import { createPortal } from "react-dom";
 
 import { useRouter } from "@/i18n/navigation";
 import { useFirebaseContext } from "@/lib/auth/FirebaseProvider";
-
-const SUPPORTED_LANGUAGES = {
-  ko: "한국어",
-  en: "English",
-  "zh-CN": "中文(简体)",
-  "zh-TW": "中文(繁體)",
-  ja: "日本語",
-};
+import { SUPPORTED_LANGUAGES } from "@/i18n/routing";
 
 export const PreferencePanel = ({
   open,

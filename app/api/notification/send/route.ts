@@ -1,6 +1,66 @@
 import { NextResponse } from "next/server";
 
 import admin from "@/lib/firebase/admin";
+import { SUPPORTED_LANGUAGES } from "@/i18n/routing";
+
+function internationalize(locale: string, data: Record<string, string>) {
+  const { videoTitle, numOfVideos } = data;
+
+  const intNumOfVideos = parseInt(numOfVideos, 10);
+
+  if (locale === "ko") {
+    const body =
+      intNumOfVideos > 1
+        ? `${videoTitle} 영상을 포함한 ${numOfVideos}개의 동영상이 업데이트 되었습니다.`
+        : `${videoTitle} 영상이 업데이트 되었습니다.`;
+    return {
+      title: "새로운 비디오 업데이트",
+      body,
+    };
+  }
+
+  if (locale === "ja") {
+    const body =
+      intNumOfVideos > 1
+        ? `${videoTitle}を含む${numOfVideos}本の動画が更新されました。`
+        : `${videoTitle}が更新されました。`;
+    return {
+      title: "新しい動画が更新されました",
+      body,
+    };
+  }
+
+  if (locale === "zh-CN") {
+    const body =
+      intNumOfVideos > 1
+        ? `${videoTitle}等${numOfVideos}个视频已更新。`
+        : `${videoTitle}已更新。`;
+    return {
+      title: "新视频更新",
+      body,
+    };
+  }
+
+  if (locale === "zh-TW") {
+    const body =
+      intNumOfVideos > 1
+        ? `${videoTitle}等${numOfVideos}個影片已更新。`
+        : `${videoTitle}已更新。`;
+    return {
+      title: "新影片更新",
+      body,
+    };
+  }
+
+  const body =
+    intNumOfVideos > 1
+      ? `${numOfVideos} videos including ${videoTitle} have been updated.`
+      : `${videoTitle} has been updated.`;
+  return {
+    title: "New Video Updated",
+    body,
+  };
+}
 
 export async function POST(req: Request) {
   const authHeader = req.headers.get("authorization");
@@ -23,22 +83,38 @@ export async function POST(req: Request) {
   }
 
   try {
-    const { topic, title, body } = await req.json();
+    const { topic, videoTitle, numOfVideos = 0 } = await req.json();
 
-    if (!topic || !title || !body) {
+    if (!topic) {
       return NextResponse.json(
-        { success: false, message: "토픽, 제목, 본문이 필요합니다." },
+        { success: false, message: "토픽이 필요합니다." },
         { status: 400 }
       );
     }
 
-    const message = {
-      notification: { title, body },
-      topic: topic, // 특정 토픽에 푸시 전송
-    };
+    let success = false;
 
-    const response = await admin.messaging().send(message);
-    return NextResponse.json({ success: true, response });
+    if (topic === "update" && videoTitle && numOfVideos > 0) {
+      const tasks: Promise<string>[] = [];
+      Object.keys(SUPPORTED_LANGUAGES).forEach((locale) => {
+        const data = internationalize(locale, {
+          videoTitle,
+          numOfVideos,
+        });
+
+        tasks.push(
+          admin.messaging().send({
+            data,
+            topic: `update-${locale}`,
+          })
+        );
+      });
+
+      await Promise.all(tasks);
+      success = true;
+    }
+
+    return NextResponse.json({ success });
   } catch (error: unknown) {
     return NextResponse.json(
       {
