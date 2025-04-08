@@ -1,6 +1,6 @@
 "use client";
 
-import { FirebaseApp, getApp, getApps, initializeApp } from "firebase/app";
+import { getApp, getApps, initializeApp } from "firebase/app";
 import * as Firestore from "firebase/firestore/lite";
 import * as Auth from "firebase/auth";
 
@@ -16,20 +16,13 @@ const firebaseConfig = {
   measurementId: "G-NC0JQM512T",
 };
 
-let firebaseApp: FirebaseApp;
-let authApp: Auth.Auth;
-
 const isFirebaseAppInitialized = getApps().length > 0;
 
-if (isFirebaseAppInitialized) {
-  firebaseApp = getApp();
-  authApp = Auth.getAuth(firebaseApp);
-} else {
-  firebaseApp = initializeApp(firebaseConfig);
-  authApp = Auth.initializeAuth(firebaseApp);
-}
+const firebaseApp = isFirebaseAppInitialized
+  ? getApp()
+  : initializeApp(firebaseConfig);
 
-export const app = initializeApp(firebaseConfig);
-export const db = Firestore.getFirestore(app);
+export const authApp = Auth.getAuth(firebaseApp);
+export const db = Firestore.getFirestore(firebaseApp);
 
-export { authApp };
+export { firebaseApp as app };

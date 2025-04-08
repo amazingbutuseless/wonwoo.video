@@ -1,6 +1,12 @@
 {
   "settings": {
-    "language": "言語設定"
+    "title": "設定",
+    "language": "言語",
+    "notifications": "通知",
+    "notificationsEnabled": "通知を受け取っています。",
+    "notificationsDisabled": "設定を有効にして、新しいビデオが登録されるたびに通知を受け取ってください。",
+    "requiredPermissionForNotifications": "通知の権限が拒否されました。\n通知を受け取るには、権限を許可する必要があります。",
+    "requiredAddingHomeForNotifications": "ホーム画面に追加後、設定を有効にすることができます。"
   },
   "video": {
     "search": {
@@ -11,6 +17,7 @@
   "misc": {
     "collapse": "折りたたむ",
     "moreWithCount": "もっと見る（{count}個）",
-    "more": "もっと見る"
+    "more": "もっと見る",
+    "isProcessing": "処理中..."
   }
 }

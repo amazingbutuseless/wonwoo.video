@@ -117,3 +117,75 @@ export async function getAllTags(): Promise<string[]> {
     client.release();
   }
 }
+
+export async function updateVideo(videoId: string, videoData: Partial<Video>) {
+  const client = await pool.connect();
+
+  try {
+    const { title, url, imageUrl, airedAt, isVoiceOnly, tags } = videoData;
+
+    await client.query('BEGIN');
+
+    const updateQuery = `
+      UPDATE videos
+      SET title = $1, url = $2, image_url = $3, aired_at = $4, is_voice_only = $5
+      WHERE id = $6
+    `;
+
+    await client.query(updateQuery, [title, url, imageUrl, airedAt, isVoiceOnly, videoId]);
+
+    if (tags) {
+      const deleteTagsQuery = `
+        DELETE FROM video_tags
+        WHERE video_id = $1
+      `;
+
+      await client.query(deleteTagsQuery, [videoId]);
+
+      const insertTagsQuery = `
+        INSERT INTO video_tags (video_id, tag_id)
+        VALUES ($1, (SELECT id FROM tags WHERE name = $2))
+      `;
+
+      for (const tag of tags) {
+        await client.query(insertTagsQuery, [videoId, tag]);
+      }
+    }
+
+    await client.query('COMMIT');
+  } catch (error) {
+    await client.query('ROLLBACK');
+    throw error;
+  } finally {
+    client.release();
+  }
+}
+
+export async function deleteVideo(videoId: string) {
+  const client = await pool.connect();
+
+  try {
+    await client.query('BEGIN');
+
+    const deleteTagsQuery = `
+      DELETE FROM video_tags
+      WHERE video_id = $1
+    `;
+
+    await client.query(deleteTagsQuery, [videoId]);
+
+    const deleteVideoQuery = `
+      DELETE FROM videos
+      WHERE id = $1
+    `;
+
+    await client.query(deleteVideoQuery, [videoId]);
+
+    await client.query('COMMIT');
+  } catch (error) {
+    await client.query('ROLLBACK');
+    throw error;
+  } finally {
+    client.release();
+  }
+}

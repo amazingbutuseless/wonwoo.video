@@ -1,6 +1,12 @@
 {
   "settings": {
-    "language": "언어 설정"
+    "title": "설정",
+    "language": "언어",
+    "notifications": "알림",
+    "notificationsEnabled": "알림을 받고 있어요.",
+    "notificationsDisabled": "설정을 활성화하고 새로운 비디오가 등록될 때마다 알림을 받아보세요.",
+    "requiredPermissionForNotifications": "알림 권한이 거부되었습니다. 알림을 받으려면 권한을 허용해야 합니다.",
+    "requiredAddingHomeForNotifications": "홈 화면에 추가 후 설정을 활성화 할 수 있습니다."
   },
   "video": {
     "search": {
@@ -11,6 +17,7 @@
   "misc": {
     "collapse": "접기",
     "moreWithCount": "더보기 ({count}개)",
-    "more": "더보기"
+    "more": "더보기",
+    "isProcessing": "처리 중..."
   }
 }
