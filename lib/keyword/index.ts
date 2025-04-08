@@ -6,7 +6,7 @@ import { db } from "../firebase";
 
 export type Keyword = {
   keywords: string[];
-  translated: {[k: number]: { [locale: string]: string }};
+  translated: {[k: string]: { [locale: string]: string }};
 };
 
 export const getKeywords = async (videoId: string) => {
