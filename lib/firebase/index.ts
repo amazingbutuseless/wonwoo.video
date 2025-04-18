@@ -5,7 +5,7 @@ import * as Firestore from "firebase/firestore/lite";
 import * as Auth from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "process.env.NEXT_PUBLIC_FIREBASE_API_KEY",
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: "wonwoo-video.firebaseapp.com",
   databaseURL:
     "https://wonwoo-video-default-rtdb.asia-southeast1.firebasedatabase.app",

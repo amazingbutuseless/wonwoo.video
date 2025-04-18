@@ -1,9 +1,10 @@
 {
   "name": "wonwoo-video",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack --experimental-https --hostname 0.0.0.0",
+    "dev:local": "next dev --turbopack --experimental-https --experimental-https-cert ./certificates/local.wonwoo.video.pem --experimental-https-key ./certificates/local.wonwoo.video-key.pem",
+    "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -15,7 +16,7 @@
     "firebase": "^11.4.0",
     "firebase-admin": "^13.2.0",
     "glob": "^11.0.1",
-    "next": "15.2.2",
+    "next": "^15.2.3",
     "next-intl": "^4.0.2",
     "pg": "^8.14.0",
     "react": "^19.0.0",
