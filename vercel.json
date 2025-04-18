@@ -2,7 +2,7 @@
   "git": {
     "deploymentEnabled": {
       "main": true,
-      "release/*": true,
+      "release/*": false,
       "**": false
     }
   }
